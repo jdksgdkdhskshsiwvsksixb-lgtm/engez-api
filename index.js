@@ -36,3 +36,42 @@ config.info = {
     urls: {
         repo: "https://github.com/DovannU/Power-AI",
         api: "https://aman-api.web.id/",
+        channel: "https://whatsapp.com/channel/0029VaoB2nZA1gAN5PNvoD6r"
+    },
+    copyright: {
+        pack: "Sine",
+        author: "3"
+    },
+    images: [
+        "https://files.catbox.moe/4qGhqo.jpg",
+        "https://files.catbox.moe/4qGhqo.jpg",
+        "https://files.catbox.moe/4qGhqo.jpg"
+    ]
+};
+
+/* ================= Start ================= */
+client.start();
+
+setTimeout(() => {
+    if (client.commandSystem) {
+        sub(client)
+    }
+}, 2000);
+
+/* ================= Catch Errors ================= */
+process.on('uncaughtException', (e) => {
+    if (e.message.includes('rate-overlimit')) {}
+});
+
+process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Rejection', err)
+});
+
+/* ================= Memory Monitor ================= */
+setInterval(() => {
+    const used = process.memoryUsage().rss / 1024 / 1024
+    if (used > 800) {
+        console.log(`⚠️ Bot memory full (${used.toFixed(1)}MB), restarting...`)
+        process.exit(1)
+    }
+}, 300000)
