@@ -5,7 +5,7 @@ import sub from '../sub.js';
 
 /* ================= Client ================= */
 const client = new Client({
-    phoneNumber: "212614799881", // Bot number - اتأكد انه 12 رقم
+    phoneNumber: "2126147998810", // Bot number - 12 رقم
     prefix: ["!", ".", "/"],
     fromMe: false,
     owners: [
@@ -31,4 +31,8 @@ if (!global.db) {
 const { config } = client;
 config.info = {
     nameBot: "JINGLIU",
-    nameChannel: "●❯━━━━ 𝕋𝕠𝕦𝕔𝕙𝕖 𝔽𝕒𝕞𝕖 ━━━━❮
+    nameChannel: "●❯━━━━ 𝕋𝕠𝕦𝕔𝕙𝕖 𝔽𝕒𝕞𝕖 ━━━━❮●",
+    idChannel: "12036300256767646@newsletter",
+    urls: {
+        repo: "https://github.com/DovannU/Power-AI",
+        api: "https://aman-api.web.id/",
