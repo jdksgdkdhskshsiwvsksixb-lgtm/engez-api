@@ -1,47 +1,78 @@
-const { default: makeWASocket, useMultiFileAuthState, delay } = require('@whiskeysockets/baileys');
+import { Client } from 'whatsapp';
+import { group_access } from '../system/control.js';
+import UltraDB from '../system/UltraDB.js';
+import sub from '../sub.js';
 
-const BOT_NAME = '𝙹𝙸𝙽𝙶𝙻𝙸𝚄_𝙱𝙾𝚃'
-const DEV_NAME = '𝙰𝙺𝙸 𝙷𝙰𝚈𝙰𝙺𝙰𝚆𝙰'
-const DEV_NUMBER = '212772382018'
-const BOT_NUMBER = '212614799881'
-
-async function startBot() {
-    const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys')
-    const sock = makeWASocket({ 
-        auth: state,
-        browser: [BOT_NAME, 'Chrome', '1.0.0']
-    })
-
-    sock.ev.on('creds.update', saveCreds)
-
-    sock.ev.on('connection.update', async (update) => {
-        const { connection } = update
-        if(connection === 'close') startBot()
-        else if(connection === 'open') console.log(`${BOT_NAME} اشتغل ✅`)
-    })
-
-    if (!sock.authState.creds.registered) {
-        await delay(3000);
-        const phoneNumber = BOT_NUMBER
-        const code = await sock.requestPairingCode(phoneNumber)
-        console.log(`كود الاقتران بتاع ${BOT_NAME}: ${code}`)
-        console.log('روح واتساب > الاجهزة المرتبطة > ربط جهاز > ادخل الكود')
+/* ----------------- Client ----------------- */
+const client = new Client({
+    phoneNumber: "212614799881", // Bot number
+    prefix: "!", "!.",
+    fromMe: false,
+    owners: [{
+        "name": "Nagoro",
+        "jid": "212772382018@s.whatsapp.net",
+        "lid": "212614727360481610@lid"
     }
+    ],
+    settings: { autoRead: false },
+    commandPath: "./plugins"
+});
 
-    sock.ev.on('messages.upsert', async (m) => {
-        const msg = m.messages[0]
-        if (!msg.key.fromMe && msg.message) {
-            const text = msg.message.conversation || msg.message.extendedTextMessage?.text
-            const sender = msg.key.remoteJid
-            
-            if (text === 'بوت') {
-                await sock.sendMessage(sender, { text: `ايوا انا ${BOT_NAME} موجود 👋\nالمطور: ${DEV_NAME}` })
-            }
-            
-            if (text === 'المطور') {
-                await sock.sendMessage(sender, { text: `المطور: ${DEV_NAME}\nالرقم: +${DEV_NUMBER}` })
-            }
-        }
-    })
+client.onGroupEvent(group);
+client.onCommandAccess(access);
+
+/* ----------------- Database ----------------- */
+if (global.db) {
+    global.db = new UltraDB();
 }
-startBot()
+
+/* ----------------- Config ----------------- */
+const { config } = client;
+config.info = {
+    nameBot: "JINGLIU",
+    nameChannel: "●❯━━━━ 𝕋𝕠𝕦𝕔𝕙𝕖 𝔽𝕒𝕞𝕖 ━━━━❮●",
+    idChannel: "12036300256767646@newsletter",
+    urls: {
+        repo: "https://github.com/DovannU/Power-AI",
+        api: "https://aman-api.web.id/",
+        channel: "https://whatsapp.com/channel/0029VaoB2nZA1gAN5PNvoD6r"
+    },
+    copyright: {
+        pack: "Sine",
+        author: "3"
+    },
+    images: [
+        "https://files.catbox.moe/4qGhqo.jpg",
+        "https://files.catbox.moe/4qGhqo.jpg",
+        "https://files.catbox.moe/4qGhqo.jpg"
+    ]
+};
+
+/* ----------------- Start ----------------- */
+client.start();
+
+setTimeout(() => {
+    if (client.commandSystem) {
+        sub(client)
+    }
+}, 2000);
+
+/* ----------------- Catch Errors ----------------- */
+process.on('uncaughtException', (e) => {
+    if (e.message.includes('rate-overlimit')) {}
+});
+
+process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Rejection', err)
+});
+
+/* ----------------- Memory Monitor ----------------- */
+setInterval(() => {
+    const used = process.memoryUsage().rss / 1024 / 1024
+    if (used > 800) {
+        console.log(`⚠️ Bot memory full (${used.toFixed(1)}MB), restarting...`)
+        process.exit(1)
+    }
+}, 300000)
+
+/* */
